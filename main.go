@@ -14,10 +14,10 @@ func main() {
 	config := Config{}
 	configor.Load(&config, configPath)
 
-	_, err := initBot(&config)
+	bot, err := initBot(&config)
 	checkError(&err)
 
-	err = startServer(&config)
+	err = startServer(&config, bot)
 	checkError(&err)
 }
 

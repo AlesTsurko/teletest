@@ -5,35 +5,48 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"	
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-func startServer(config *Config) error {
+func startServer(config *Config, bot *tgbotapi.BotAPI) error {
 	router := gin.Default()
 
-	router.POST("/"+config.APIToken, replyRout)
+	router.Use(setBot(bot))
+
+	router.POST("/"+config.APIToken, replyRoute)
 
 	router.Run(":" + strconv.Itoa(config.Port))
 
 	return nil
 }
 
-func replyRout(c *gin.Context) {
+func setBot(bot *tgbotapi.BotAPI) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("bot", bot)
+		c.Next()
+	}
+}
+
+func replyRoute(c *gin.Context) {
 	teleRequest, err := deserializeRequest(c)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	log.Println(teleRequest)
+
+	bot := c.MustGet("bot").(*tgbotapi.BotAPI)
 }
 
 func deserializeRequest(c *gin.Context) (*TelegramRequest, error) {
 	decoder := json.NewDecoder(c.Request.Body)
+
 	var deserialized TelegramRequest
 	err := decoder.Decode(&deserialized)
 	if err != nil {
 		return nil, err
 	}
+
 	return &deserialized, nil
 }
 
