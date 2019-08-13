@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/AlesTsurko/teletest.svg?branch=master)](https://travis-ci.org/AlesTsurko/teletest)
+
 # Teletest
 
 Simple Telegram bot example.
