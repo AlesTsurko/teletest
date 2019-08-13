@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/jinzhu/configor"
 )
@@ -16,8 +17,10 @@ func main() {
 	bot, err := initBot(&config)
 	checkError(&err)
 
-	err = startServer(&config, bot)
+	server, err := initServer(&config, bot)
 	checkError(&err)
+
+	server.Run(":" + strconv.Itoa(config.Port))
 }
 
 func getConfigPath() string {

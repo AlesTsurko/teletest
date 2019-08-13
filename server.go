@@ -3,22 +3,19 @@ package main
 import (
 	"encoding/json"
 	"log"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-func startServer(config *Config, bot *tgbotapi.BotAPI) error {
+func initServer(config *Config, bot *tgbotapi.BotAPI) (*gin.Engine, error) {
 	router := gin.Default()
 
 	router.Use(setBot(bot))
 
 	router.POST("/"+config.APIToken, replyRoute)
 
-	router.Run(":" + strconv.Itoa(config.Port))
-
-	return nil
+	return router, nil
 }
 
 func setBot(bot *tgbotapi.BotAPI) gin.HandlerFunc {
