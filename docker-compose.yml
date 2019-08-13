@@ -13,6 +13,7 @@ services:
             VIRTUAL_NETWORK: nginx-proxy
             VIRTUAL_PORT: 8000
             GIN_MODE: release
+            TELEBOT_CONFIG_PATH: config.yml
 
     nginx_proxy:
         image: jwilder/nginx-proxy
