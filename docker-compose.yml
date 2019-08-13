@@ -7,11 +7,12 @@ services:
         restart: unless-stopped
         environment:
             LETSENCRYPT_EMAIL: ales.tsurko@gmail.com
-            LETSENCRYPT_HOST: 35.230.133.5
+            LETSENCRYPT_HOST: telebot.alestsurko.by
             USERNAME: alestsurko
-            VIRTUAL_HOST: 35.230.133.5
+            VIRTUAL_HOST: telebot.alestsurko.by
             VIRTUAL_NETWORK: nginx-proxy
             VIRTUAL_PORT: 8000
+            GIN_MODE: release
 
     nginx_proxy:
         image: jwilder/nginx-proxy

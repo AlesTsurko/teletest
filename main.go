@@ -2,16 +2,24 @@ package main
 
 import (
 	"log"
-	"strconv"
 
-	"github.com/gin-gonic/gin"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/jinzhu/configor"
 )
 
 const (
 	configPath = "config.yml"
 )
+
+func main() {
+	config := Config{}
+	configor.Load(&config, configPath)
+
+	_, err := initBot(&config)
+	checkError(&err)
+
+	err = startServer(&config)
+	checkError(&err)
+}
 
 // Config represents configuration of the service.
 type Config struct {
@@ -20,52 +28,8 @@ type Config struct {
 	Port     int `default:"8000"`
 }
 
-func initBot(config *Config) error {
-	bot, err := tgbotapi.NewBotAPI(config.APIToken)
-	if err != nil {
-		return err
-	}
-
-	log.Printf("Authorized on account %s", bot.Self.UserName)
-
-	_, err = bot.SetWebhook(tgbotapi.NewWebhook(config.Endpoint + bot.Token))
-	if err != nil {
-		return err
-	}
-
-	updates := bot.ListenForWebhook("/" + bot.Token)
-
-	for update := range updates {
-		log.Printf("%+v\n", update)
-	}
-
-	return nil
-}
-
-func startServer(config *Config) error {
-	server := gin.Default()
-	server.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	server.Run(":" + strconv.Itoa(config.Port))
-
-	return nil
-}
-
-func main() {
-	config := Config{}
-	configor.Load(&config, configPath)
-
-	// err := initBot(&config)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	err := startServer(&config)
-	if err != nil {
+func checkError(err *error) {
+	if *err != nil {
 		log.Fatal(err)
 	}
-
 }
