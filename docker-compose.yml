@@ -1,0 +1,39 @@
+version: '2'
+services:
+    app:
+        image: teletest
+        build: .
+        container_name: teletest
+        restart: unless-stopped
+        environment:
+            LETSENCRYPT_EMAIL: ales.tsurko@gmail.com
+            LETSENCRYPT_HOST: 35.230.133.5
+            USERNAME: alestsurko
+            VIRTUAL_HOST: 35.230.133.5
+            VIRTUAL_NETWORK: nginx-proxy
+            VIRTUAL_PORT: 8000
+
+    nginx_proxy:
+        image: jwilder/nginx-proxy
+        container_name: nginx_proxy
+        restart: unless-stopped
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - "/etc/nginx/certs"
+            - "/etc/nginx/vhost.d"
+            - "/usr/share/nginx/html"
+            - "/var/run/docker.sock:/tmp/docker.sock:ro"
+        labels:
+            com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+
+    letsencrypt-nginx-proxy-companion:
+        restart: always
+        image: jrcs/letsencrypt-nginx-proxy-companion
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        volumes_from:
+            - nginx_proxy
+        depends_on:
+            - nginx_proxy 

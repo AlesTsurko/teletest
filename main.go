@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +17,7 @@ const (
 type Config struct {
 	APIToken string
 	Endpoint string
-	Port     int `default:"8080"`
+	Port     int `default:"8000"`
 }
 
 func initBot(config *Config) error {
@@ -35,7 +34,6 @@ func initBot(config *Config) error {
 	}
 
 	updates := bot.ListenForWebhook("/" + bot.Token)
-	go http.ListenAndServe("0.0.0.0:"+strconv.Itoa(config.Port), nil)
 
 	for update := range updates {
 		log.Printf("%+v\n", update)
